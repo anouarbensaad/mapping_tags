@@ -24,58 +24,60 @@ strecture = {
 }
 
 class Mappingtags:
-	def __init__(self,url,maps):
-		self.url = url
-		self.maps = maps
 
-	def get_contents(self):
-		results = requests.get(self.url,headers=request_headers)
-		return results.text
-	
-	def opened_tags(self,data):
-		regex=r'<(\w+)[^>]*>'
-		matches=re.findall(re.compile(regex),data)
-		return matches
+    def __init__(self,url,maps):
+        self.url = url
+        self.maps = maps
 
-	def closed_tags(self,data):
-		regex=r'</(\w+)>'
-		matches=re.findall(re.compile(regex),data)
-		return matches
+    def get_contents(self):
+        results = requests.get(self.url,headers=request_headers)
+        return results.text
 
-	def tag_mapping(self,data,tag):
-		regex=rf"(<{tag}>.+</{tag})"
-		matches=re.findall(regex,data,flags=re.DOTALL)
-		return matches
+    def opened_tags(self,data):
+        regex=r'<(\w+)[^>]*>'
+        matches=re.findall(re.compile(regex),data)
+        return matches
 
-	def parse_tag_mapping(self,array):
-		regex=r'(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|\s*\/?[>"\']))+.)["\']?'
-		for maps in array:
-			print(maps)
-			matches=re.findall(regex,maps)
-			print(matches)
+    def closed_tags(self,data):
+        regex=r'</(\w+)>'
+        matches=re.findall(re.compile(regex),data)
+        return matches
 
-	def strecutre_general_maps(self,opened_matches,closed_matches):
-		"""
-		Return json object of open/closed tags duplicated.
-		"""
-		openedmappings = {}
-		closedmappings = {}
-		tmp = []
-		tmp2= []
-		for m in closed_matches:
-			if m not in tmp2:
-				tmp2.append(m)
-				closedmappings[m] = closed_matches.count(m)
-		for m in opened_matches:
-			if m not in tmp:
-				tmp.append(m)
-				openedmappings[m] = opened_matches.count(m)
-		return json.dumps({"mappings":{"opened_tag":[openedmappings]},"closed_tag":[closedmappings]})
+    def tag_mapping(self,data,tag):
+        regex=rf"(<{tag}>.+</{tag})"
+        matches=re.findall(regex,data,flags=re.DOTALL)
+        return matches
 
+    def parse_tag_mapping(self,array):
+        regex=r'(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|\s*\/?[>"\']))+.)["\']?'
+        for maps in array:
+            print(maps)
+            matches=re.findall(regex,maps)
+            print(matches)
 
-instance = Mappingtags(url="http://127.0.0.1",maps={})
+    def strecutre_general_maps(self,opened_matches,closed_matches):
+        """
+        Return json object of open/closed tags duplicated..
+        """
+        openedmappings = {}
+        closedmappings = {}
+        tmp = []
+        tmp2= []
+        for m in closed_matches:
+            if m not in tmp2:
+                tmp2.append(m)
+                closedmappings[m] = closed_matches.count(m)
+        for m in opened_matches:
+            if m not in tmp:
+                tmp.append(m)
+                openedmappings[m] = opened_matches.count(m)
+        return json.dumps({"mappings":{"opened_tag":[openedmappings]},"closed_tag":[closedmappings]})
 
-content = instance.get_contents()
-opened_tags=instance.opened_tags(content)
-closed_tags=instance.closed_tags(content)
-print(instance.strecutre_general_maps(opened_tags,closed_tags))
+    def diff_tags(self,opened,closed):
+        return json.dumps({"mappings":{"diff":[x for x in opened if x not in closed]}})
+
+    def parse_links(self,content):
+        regexp = r'href=\"(.+)[^"]*("\s+)?(^>)?'
+        matches=re.finditer(regexp,content)
+        return matches
+
