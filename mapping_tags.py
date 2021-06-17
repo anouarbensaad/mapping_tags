@@ -25,9 +25,8 @@ strecture = {
 
 class Mappingtags:
 
-    def __init__(self,url,maps):
+    def __init__(self,url):
         self.url = url
-        self.maps = maps
 
     def get_contents(self):
         results = requests.get(self.url,headers=request_headers)

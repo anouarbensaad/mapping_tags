@@ -26,19 +26,35 @@ args = parse_args()
 url = args.url
 maptype = args.maptype
 
-def strect_gl():
+def strect_gl(content):
     """
-    Print list of all ads
+    return tags strecture
     """
-    instance = mapping_tags.Mappingtags(url=url,maps=[])
-    content = instance.get_contents()
     opened_tags=instance.opened_tags(content)
     closed_tags=instance.closed_tags(content)
-    print(instance.strecutre_general_maps(opened_tags,closed_tags))
+    return instance.strecutre_general_maps(opened_tags,closed_tags)
 
+def close_open_diff(content):
+    """
+    return differences between closed and open tags
+    """
+    opened_tags=instance.opened_tags(content)
+    closed_tags=instance.closed_tags(content)
+    return instance.diff_tags(opened_tags,closed_tags)
 
+def grab_links(content):
+    """
+    return all links from web
+    """
+    return instance.parse_links(content)
 
 if __name__ == "__main__":
     if(url):
+        instance = mapping_tags.Mappingtags(url=url)
+        content = instance.get_contents()
         if(maptype == "global"):
-            strect_gl()
+            strect_gl(content)
+        if(maptype == "diff"):
+            close_open_diff(content)
+        if(maptype == "links"):
+            grab_links(content)
