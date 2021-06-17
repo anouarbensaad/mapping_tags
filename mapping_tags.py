@@ -29,30 +29,49 @@ class Mappingtags:
         self.url = url
 
     def get_contents(self):
+        """
+        return text contents of html page from url.
+        """
         results = requests.get(self.url,headers=request_headers)
         return results.text
 
     def opened_tags(self,data):
+        """
+        method to get all matches opened tags found.
+        """
         regex=r'<(\w+)[^>]*>'
         matches=re.findall(re.compile(regex),data)
         return matches
     
     def tag_property(self,data,tag):
+        """
+        get a specific tag from getted contents.
+        """
         regex=rf'<{tag}(.+)[^>]*\>'
         matches=re.findall(re.compile(regex),data)
         return matches
 
     def closed_tags(self,data):
+        """
+        method to get all matches of opened tags found.
+        """
         regex=r'</(\w+)>'
         matches=re.findall(re.compile(regex),data)
         return matches
 
     def tag_mapping(self,data,tag):
+        """
+        return the tag strecture.
+        """
         regex=rf"(<{tag}>.+</{tag})"
         matches=re.findall(regex,data,flags=re.DOTALL)
         return matches
 
     def parse_tag_mapping(self,properties):
+        """
+        return all matches of proprietes.
+        parse a tag proprietes. 
+        """
         regex=r'(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|\s*\/?[>"\']))+.)["\']?'
         matches=re.findall(regex,properties)
         return matches
@@ -76,9 +95,14 @@ class Mappingtags:
         return json.dumps({"mappings":{"opened_tag":[openedmappings]},"closed_tag":[closedmappings]})
 
     def diff_tags(self,opened,closed):
+        """
+        opened : all opeened tags
+        closed : all closed tags
+        return diffs between opened and closed tags.
+        """
         return json.dumps({"mappings":{"diff":[x for x in opened if x not in closed]}})
 
     def parse_links(self,content):
         regexp = r'href=\"(.+)[^"]*("\s+)?(^>)?'
-        matches=re.finditer(regexp,content)
+        matches=re.findall(regexp,content)
         return matches

@@ -34,7 +34,7 @@ def strect_gl(content):
     """
     opened_tags=instance.opened_tags(content)
     closed_tags=instance.closed_tags(content)
-    return instance.strecutre_general_maps(opened_tags,closed_tags)
+    sys.stdout.write(instance.strecutre_general_maps(opened_tags,closed_tags))
 
 def close_open_diff(content):
     """
@@ -48,7 +48,7 @@ def grab_links(content):
     """
     return all links from web
     """
-    sys.stdout.write(instance.parse_links(content))
+    return instance.parse_links(content)
 
 def tags_properties(content,prop):
     props = []
@@ -57,7 +57,7 @@ def tags_properties(content,prop):
         for x in temp:
             obj={}
             if (len(x)>1):
-                obj[x[0]] = x[1]
+                obj[x[0]] = x[1].strip('"')
                 props.append(obj)
     sys.stdout.write(json.dumps({prop:[props]}))
 
@@ -70,6 +70,6 @@ if __name__ == "__main__":
         if(maptype == "diff"):
             close_open_diff(content)
         if(maptype == "links"):
-            grab_links(content)
+            print(grab_links(content))
         if(propriete):
             tags_properties(content,propriete)
