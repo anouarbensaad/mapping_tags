@@ -1,8 +1,8 @@
 import argparse
 import sys
 import json
-from lib.mapping.mappinghtml import MappingHtml
-from lib.mapping.requester import Requester
+from modules.mappinghtml import MappingHtml
+from modules.requester import Requester
 
 if sys.version_info < (3, 0):
     raise Exception("This program requires Python 3.0 or greater")
