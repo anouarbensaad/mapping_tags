@@ -36,6 +36,11 @@ class Mappingtags:
         regex=r'<(\w+)[^>]*>'
         matches=re.findall(re.compile(regex),data)
         return matches
+    
+    def tag_property(self,data,tag):
+        regex=rf'<{tag}(.+)[^>]*\>'
+        matches=re.findall(re.compile(regex),data)
+        return matches
 
     def closed_tags(self,data):
         regex=r'</(\w+)>'
@@ -47,12 +52,10 @@ class Mappingtags:
         matches=re.findall(regex,data,flags=re.DOTALL)
         return matches
 
-    def parse_tag_mapping(self,array):
+    def parse_tag_mapping(self,properties):
         regex=r'(\S+)=["\']?((?:.(?!["\']?\s+(?:\S+)=|\s*\/?[>"\']))+.)["\']?'
-        for maps in array:
-            print(maps)
-            matches=re.findall(regex,maps)
-            print(matches)
+        matches=re.findall(regex,properties)
+        return matches
 
     def strecutre_general_maps(self,opened_matches,closed_matches):
         """
@@ -79,4 +82,3 @@ class Mappingtags:
         regexp = r'href=\"(.+)[^"]*("\s+)?(^>)?'
         matches=re.finditer(regexp,content)
         return matches
-

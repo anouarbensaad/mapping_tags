@@ -1,5 +1,6 @@
 import argparse
 import sys
+import json
 import mapping_tags
 
 if sys.version_info < (3, 0):
@@ -16,8 +17,8 @@ def parse_args():
     parser._optionals.title = "\nOPTIONS"
     
     parser.add_argument('-u', '--url', help='xxxx',dest='url')
-
-    parser.add_argument('-t', '--type', help='list mapping', dest='maptype',choices=['global', 'diff', 'links'])
+    parser.add_argument('-m', '--mapping', help='list mapping', dest='maptype',choices=['global', 'diff', 'links'])
+    parser.add_argument('-p', '--prop', help="properties_tags", dest="prop")
     
     return parser.parse_args()
 
@@ -25,6 +26,7 @@ def parse_args():
 args = parse_args()
 url = args.url
 maptype = args.maptype
+propriete = args.prop
 
 def strect_gl(content):
     """
@@ -40,13 +42,24 @@ def close_open_diff(content):
     """
     opened_tags=instance.opened_tags(content)
     closed_tags=instance.closed_tags(content)
-    return instance.diff_tags(opened_tags,closed_tags)
+    sys.stdout.write(instance.diff_tags(opened_tags,closed_tags))
 
 def grab_links(content):
     """
     return all links from web
     """
-    return instance.parse_links(content)
+    sys.stdout.write(instance.parse_links(content))
+
+def tags_properties(content,prop):
+    props = []
+    for i in instance.tag_property(content,prop):
+        temp = [x.split("=") for x in i.strip().split(" ")]
+        for x in temp:
+            obj={}
+            if (len(x)>1):
+                obj[x[0]] = x[1]
+                props.append(obj)
+    sys.stdout.write(json.dumps({prop:[props]}))
 
 if __name__ == "__main__":
     if(url):
@@ -58,3 +71,5 @@ if __name__ == "__main__":
             close_open_diff(content)
         if(maptype == "links"):
             grab_links(content)
+        if(propriete):
+            tags_properties(content,propriete)
