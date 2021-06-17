@@ -23,6 +23,9 @@ strecture = {
 	"mapping": []
 }
 
+class MappingException(Exception):
+    pass
+
 class Mappingtags:
 
     def __init__(self,url):
@@ -39,6 +42,8 @@ class Mappingtags:
         """
         method to get all matches opened tags found.
         """
+        if not data:
+            raise MappingException("No content found to parse opened tags")
         regex=r'<(\w+)[^>]*>'
         matches=re.findall(re.compile(regex),data)
         return matches
@@ -47,14 +52,24 @@ class Mappingtags:
         """
         get a specific tag from getted contents.
         """
+        if not data:
+            raise MappingException("No content found to parse opened tags")
+        
+        if not tag:
+            raise MappingException("No spécific tags found to parse")
         regex=rf'<{tag}(.+)[^>]*\>'
         matches=re.findall(re.compile(regex),data)
+        if(not matches):
+            raise MappingException("No Matches for this {0}".format(tag))
         return matches
 
     def closed_tags(self,data):
         """
         method to get all matches of opened tags found.
         """
+        if not data:
+            raise MappingException("No content found to parse closed tags")
+
         regex=r'</(\w+)>'
         matches=re.findall(re.compile(regex),data)
         return matches
@@ -63,6 +78,11 @@ class Mappingtags:
         """
         return the tag strecture.
         """
+        if not data:
+            raise MappingException("No content found to parse tags mapping")
+        
+        if not tag:
+            raise MappingException("No spécific tag found to parse")
         regex=rf"(<{tag}>.+</{tag})"
         matches=re.findall(regex,data,flags=re.DOTALL)
         return matches
